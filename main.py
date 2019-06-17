@@ -3,11 +3,11 @@ import codecs
 import math
 import time
 import sys
-import subprocess
 import os.path
 import pickle
 import numpy as np
 import gensim
+from tqdm import tqdm
 
 from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.models import Sequential
@@ -15,13 +15,12 @@ from tensorflow.python.keras.layers.core import Dense
 from tensorflow.python.keras.layers.wrappers import TimeDistributed
 from tensorflow.python.keras.layers.recurrent import LSTM
 from tensorflow.python.keras.layers.recurrent import GRU
+from tensorflow.python.keras.layers.wrappers import Bidirectional
 from tensorflow.python.keras.layers.embeddings import Embedding
 from tensorflow.python.keras.layers.core import Lambda, Activation
 from tensorflow.python.keras.utils import np_utils
 from tensorflow.python.keras.preprocessing import sequence
 
-from tqdm import tqdm
-# from sklearn.cross_validation import train_test_split
 from nltk.translate.bleu_score import sentence_bleu
 from numpy import inf
 from operator import itemgetter
@@ -301,6 +300,35 @@ def gru_model():
 
         return model
 
+def bidirectional_model():
+    
+        length_vocab, embedding_size = word2vec.shape
+
+        model = Sequential()
+        model.add(Embedding(length_vocab, embedding_size,
+                        input_length=parameters.max_length,
+                        weights=[word2vec], mask_zero=True,
+                        name='embedding_layer'))
+
+        for i in range(parameters.rnn_layers):
+            bilstm = Bidirectional(LSTM(parameters.rnn_size, return_sequences=True, name='bilstm_layer_%d' % (i + 1)))
+            model.add(bilstm)
+
+        model.add(Lambda(simple_context,
+                     mask=lambda inputs, mask: mask[:, parameters.max_len_desc:],
+                     output_shape = lambda input_shape: (input_shape[0], parameters.max_len_head, 2*(parameters.rnn_size - parameters.activation_rnn_size)),
+                     name='simple_context_layer'))
+
+        vocab_size = word2vec.shape[0]
+        model.add(TimeDistributed(Dense(vocab_size, name='time_distributed_layer')))
+        
+        model.add(Activation('softmax', name='activation_layer'))
+        model.compile(loss='categorical_crossentropy', optimizer='adam')
+        K.set_value(model.optimizer.lr, np.float32(parameters.learning_rate))
+        print (model.summary())
+
+        return model
+
 def train(model,train_size,val_size,val_step_size,epochs,words_replace_count,model_weights_file_name):
 
     def OHE_to_indexes(y_val):
@@ -519,8 +547,8 @@ def test(model, no_of_testing_sample, model_weights_file_name,top_k,output_file,
 word2vec = load_fasttext_embedding('wiki.fa/wiki.fa.vec')
 
 # model = lstm_model()
-model = gru_model()
-# model = bidirectional_model()
+# model = gru_model()
+model = bidirectional_model()
 
 
 train(model=model, 
