@@ -24,6 +24,7 @@ from tensorflow.python.keras.preprocessing import sequence
 from nltk.translate.bleu_score import sentence_bleu
 from numpy import inf
 from operator import itemgetter
+import matplotlib.pyplot as plt
 
 import parameters
 
@@ -429,6 +430,8 @@ def train(model,train_size,val_size,val_step_size,epochs,words_replace_count,mod
                 
         with open("blue_scores.pickle", "wb") as output_file:
             pickle.dump(blue_scores, output_file)
+    
+    return blue_scores
 
 def test(model, no_of_testing_sample, model_weights_file_name,top_k,output_file,seperator='#|#'):
 
@@ -546,12 +549,12 @@ def test(model, no_of_testing_sample, model_weights_file_name,top_k,output_file,
 
 word2vec = load_fasttext_embedding('wiki.fa/wiki.fa.vec')
 
-# model = lstm_model()
+model = lstm_model()
 # model = gru_model()
-model = bidirectional_model()
+# model = bidirectional_model()
 
 
-train(model=model, 
+blue_scores = train(model=model, 
     train_size=parameters.train_size, 
     val_size=parameters.val_size,
     val_step_size=128, 
@@ -560,8 +563,23 @@ train(model=model,
     model_weights_file_name='model_weights.h5')
 
 
+
 test(model=model,
     no_of_testing_sample= 12567,
     model_weights_file_name='model_weights.h5',
     top_k=5,
     output_file='test_output.txt')
+
+
+
+# plot 
+N = len(blue_scores)
+plt.style.use("ggplot")
+fig = plt.figure(figsize=(20,8))
+plt.title("BLUE, LSTM")
+plt.plot(np.arange(0, N), blue_scores)
+
+plt.xlabel("Epoch #")
+plt.ylabel("BLUE score")
+plt.legend(loc="lower left")
+plt.show()
