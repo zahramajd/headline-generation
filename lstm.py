@@ -625,7 +625,7 @@ def test(model, data_file_name, no_of_testing_sample, model_weights_file_name,to
 
 
 
-temp_word2vec_dict = read_word_embedding('data/wiki.fa/wiki.fa.vec')
+temp_word2vec_dict = read_word_embedding('data/wiki.fa.vec')
 length_vocab = len(temp_word2vec_dict)
 shape = (length_vocab, parameters.embedding_dimension)
 # faster initlization and random for <empty> and <eos> tag
