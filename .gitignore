@@ -12,3 +12,6 @@ ah.py
 *.txt
 main-ok.py
 tmp.py
+*.csv
+split.py
+main.py
