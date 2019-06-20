@@ -625,7 +625,7 @@ def test(model, data_file_name, no_of_testing_sample, model_weights_file_name,to
 
 
 
-temp_word2vec_dict = read_word_embedding('wiki.fa/wiki.fa.vec')
+temp_word2vec_dict = read_word_embedding('data/wiki.fa/wiki.fa.vec')
 length_vocab = len(temp_word2vec_dict)
 shape = (length_vocab, parameters.embedding_dimension)
 # faster initlization and random for <empty> and <eos> tag
@@ -637,8 +637,8 @@ for i in range(length_vocab):
 model = create_model()
 
 blue_scores =train(model=model, 
-    data_file='train.csv', 
-    val_file='val.csv',
+    data_file='data/train.csv', 
+    val_file='data/val.csv',
     train_size=7425, 
     val_size=2475,
     val_step_size=128, 
@@ -649,7 +649,7 @@ blue_scores =train(model=model,
 
 
 test(model=model,
-    data_file_name='test.csv',
+    data_file_name='data/test.csv',
     no_of_testing_sample= 100,
     model_weights_file_name='bidirectional_weights.h5',
     top_k=5,
