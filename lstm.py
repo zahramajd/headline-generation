@@ -333,7 +333,7 @@ def data_generator(file_name,number_words_to_replace,model,is_training=True):
     #     headlines_data = data['heads']
     #     descs_data = data['descs']
 
-    data = pd.read_csv(file_name, header=None)[0:100]
+    data = pd.read_csv(file_name, header=None)
     headlines_data = data.iloc[:, [1]]
     descs_data = data.iloc[:, [0]]
 
