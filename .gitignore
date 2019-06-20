@@ -2,7 +2,6 @@
 *.data
 *.tar.gz
 .DS_Store
-*.zip
 wiki.fa/wiki.fa.bin
 wiki.fa/wiki.fa.vec
 __pycache__/parameters.cpython-36.pyc
