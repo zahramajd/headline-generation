@@ -307,7 +307,8 @@ def large_file_reading_generator(data):
 
 #     with open("HEADLINE_Generation/sample.headline.data", "r") as fp:
 #         headlines = fp.readlines()
-#         # headlines = headlines[0:100]
+#         # headlines = headlines
+
 #         fp.close()
 
 #     with open("HEADLINE_Generation/sample.content.data", "r") as fp:
@@ -334,7 +335,7 @@ def data_generator(file_name,number_words_to_replace,model,is_training=True):
     #     headlines_data = data['heads']
     #     descs_data = data['descs']
 
-    data = pd.read_csv(file_name, header=None)[0:100]
+    data = pd.read_csv(file_name, header=None)
     headlines_data = data.iloc[:, [1]]
     descs_data = data.iloc[:, [0]]
 
